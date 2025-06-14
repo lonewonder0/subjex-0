@@ -167,6 +167,55 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     );
   }
 
+  function AddComment() {
+    function SendComment(formData: FormData) {
+      async function Post() {
+        if (FormData == null) {
+          return;
+        }
+
+        const content = formData.get("content")?.toString();
+
+        const body = {
+          content: content,
+        };
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}/comments`, {
+          method: "POST",
+          credentials: "include",
+          cache: "no-cache",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        setForceReload((prev) => {
+          return !prev;
+        });
+      }
+
+      Post();
+    }
+
+    return (
+      <form
+        action={SendComment}
+        className='flex flex-row gap-2 w-full h-fit border-[1px] border-gray-200 shadow-md rounded-sm p-2'
+      >
+        <input
+          type='text'
+          name='content'
+          placeholder='Write a comment'
+          className='flex italic w-[80%] bg-gray-100 rounded-md p-2'
+        />
+        <button className='flex w-[20%] px-4 py-2 bg-blue-200 hover:bg-blue-400 hover:underline items-center justify-center shadow-md rounded-md'>
+          POST
+        </button>
+      </form>
+    );
+  }
+
   // Preload checks
   if (isLoggedIn.pending == true) {
     return (
@@ -205,6 +254,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
       <p className='flex text-lg'>{ticket.state.description}</p>
       <span className='flex h-[1px] w-[90%] bg-gray-300'></span>
       <h2 className='flex text-2xl self-start'>Comments:</h2>
+      <AddComment />
       <div className='flex w-full h-fit gap-4 flex-col'>
         {comments.state.map((comment) => {
           return <Comment data={comment} key={comment.id} />;
