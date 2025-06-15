@@ -140,6 +140,8 @@ function Ticket({ data }: { data: Ticket }) {
           <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-green-300'>{data.status.toUpperCase()}</h4>
         ) : data.status.toLowerCase() === "closed" ? (
           <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-red-300'>{data.status.toUpperCase()}</h4>
+        ) : data.status.toLowerCase() === "in review" ? (
+          <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-orange-300'>{data.status.toUpperCase()}</h4>
         ) : null}
       </div>
 

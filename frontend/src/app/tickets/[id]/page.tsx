@@ -133,6 +133,28 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     GetSession();
   }, [forceReload]);
 
+  // -----------------------------------------
+  // Components for page
+  // -----------------------------------------
+
+  function StatusChanger() {
+    if (ticket.state == null) {
+      return;
+    }
+
+    return (
+      <>
+        {ticket.state.status.toLowerCase() === "open" ? (
+          <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-green-300'>{ticket.state.status.toUpperCase()}</h4>
+        ) : ticket.state.status.toLowerCase() === "closed" ? (
+          <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-red-300'>{ticket.state.status.toUpperCase()}</h4>
+        ) : ticket.state.status.toLowerCase() === "in review" ? (
+          <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-orange-300'>{ticket.state.status.toUpperCase()}</h4>
+        ) : null}
+      </>
+    );
+  }
+
   function Comment({ data }: { data: Comment }) {
     if (ticket.state == null) return null;
 
@@ -165,6 +187,30 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
         ) : null}
       </div>
     );
+  }
+
+  // Change Status function
+  function ChangeStatus(newStatus: string) {
+    async function Patch() {
+      const body = {
+        status: newStatus,
+      };
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}`, {
+        method: "PATCH",
+        credentials: "include",
+        cache: "no-cache",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setForceReload((prev) => {
+        return !prev;
+      });
+    }
+    Patch();
   }
 
   function AddComment() {
@@ -216,7 +262,9 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     );
   }
 
+  // -----------------------------------------
   // Preload checks
+  // -----------------------------------------
   if (isLoggedIn.pending == true) {
     return (
       <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
@@ -247,12 +295,49 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     );
   }
 
+  // -----------------------------------------
   // Main return
+  // -----------------------------------------
   return (
     <div className='flex w-[80%] h-full flex-col gap-4 justify-center items-center'>
       <h1 className='flex text-4xl underline bold'>{ticket.state.title}</h1>
       <p className='flex text-lg'>{ticket.state.description}</p>
-      <span className='flex h-[1px] w-[90%] bg-gray-300'></span>
+      <span className='flex h-[1px] w-full bg-gray-300' />
+      <div className='flex w-full h-fit flex-row gap-4 justify-center items-center'>
+        <h5 className='flex text-md'>Current Status:</h5>
+        <StatusChanger />
+        {userId == ticket.state.creator_id && (
+          <>
+            <span className='flex h-full w-[1px] bg-gray-300' />
+            <h5 className='flex text-md'>Change Status:</h5>
+            <button
+              className='flex px-4 py-2 bg-green-300 rounded-md shadow-md hover:bg-green-600 hover:underline'
+              onClick={() => {
+                ChangeStatus("Open");
+              }}
+            >
+              OPEN
+            </button>
+            <button
+              className='flex px-4 py-2 bg-orange-300 rounded-md shadow-md hover:bg-orange-600 hover:underline'
+              onClick={() => {
+                ChangeStatus("In Review");
+              }}
+            >
+              PUT INTO REVIEW
+            </button>
+            <button
+              className='flex px-4 py-2 bg-red-300 rounded-md shadow-md hover:bg-red-600 hover:underline'
+              onClick={() => {
+                ChangeStatus("Closed");
+              }}
+            >
+              CLOSE
+            </button>
+          </>
+        )}
+      </div>
+      <span className='flex h-[1px] w-full bg-gray-300' />
       <h2 className='flex text-2xl self-start'>Comments:</h2>
       <AddComment />
       <div className='flex w-full h-fit gap-4 flex-col'>
