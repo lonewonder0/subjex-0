@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, RedirectType, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
@@ -19,7 +19,7 @@ export default function LoginPage() {
       }
     }
     CheckIfAlreadyLoggedIn();
-  }, []);
+  }, [router]);
 
   function FormActionFunc(formData: FormData) {
     async function SendLogin() {

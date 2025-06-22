@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, RedirectType, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
@@ -19,7 +19,7 @@ export default function LoginPage() {
       }
     }
     CheckIfAlreadyLoggedIn();
-  }, []);
+  }, [router]);
 
   function FormActionFunc(formData: FormData) {
     async function SendLogin() {
@@ -103,7 +103,7 @@ export default function LoginPage() {
           type='submit'
           className='flex px-4 py-2 rounded-sm shadow-md bg-blue-200 hover:bg-blue-400 hover:underline text-center items-center justify-center'
         >
-          Login
+          Create
         </button>
         <p className='flex text-1xl italic'>{message}</p>
       </form>

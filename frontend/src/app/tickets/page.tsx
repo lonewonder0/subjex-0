@@ -25,6 +25,7 @@ export default function Tickets() {
   const [username, setUsername] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [tickets, setTickets] = useState<{ state: Array<Ticket>; pending: boolean }>({ state: [], pending: true });
+  // const [hideClosed, setHideClosed] = useState<boolean>(true);
 
   useEffect(() => {
     async function GetSession() {
@@ -69,7 +70,7 @@ export default function Tickets() {
 
         const tickets = (await res2.json()) as Array<Ticket>;
 
-        setTickets((prev) => {
+        setTickets(() => {
           return { state: tickets, pending: false };
         });
       } else {
@@ -82,7 +83,7 @@ export default function Tickets() {
     }
 
     GetSession();
-  }, [forceReload]);
+  }, [forceReload, router]);
 
   if (isLoggedIn.pending == true) {
     return (
@@ -100,18 +101,28 @@ export default function Tickets() {
 
   return (
     <div className='flex w-full h-full flex-col gap-4 items-center justify-center'>
-      <div className='flex flex-row w-[80%] h-fit justify-between'>
-        <h1 className='flex text-3xl bold'>{username}'s Tickets</h1>
-        <button
-          className='flex text-1xl px-4 py-2 bg-blue-200 hover:bg-blue-400 hover:underline rounded-sm shadow-md'
-          onClick={() =>
-            setForceReload((prev) => {
-              return !prev;
-            })
-          }
-        >
-          <Image src={ReloadIcon} alt='Reload Icon' />
-        </button>
+      <div className='flex flex-row w-[80%] h-fit'>
+        {isAdmin == true ? (
+          <h1 className='flex w-full h-fit text-3xl bold'>{username}&apos;s Tickets (Admin)</h1>
+        ) : (
+          <h1 className='flex w-full h-fit text-3xl bold'>{username}&apos;s Tickets</h1>
+        )}
+
+        <div className='flex w-full h-fit flex-row gap-4 justify-end self-end'>
+          <button className='flex px-4 py-2 bg-purple-200 hover:bg-purple-400 hover:underline rounded-sm shadow-md'>
+            Toggle Hide Closed
+          </button>
+          <button
+            className='flex text-1xl px-4 py-2 bg-blue-200 hover:bg-blue-400 hover:underline rounded-sm shadow-md'
+            onClick={() =>
+              setForceReload((prev) => {
+                return !prev;
+              })
+            }
+          >
+            <Image src={ReloadIcon} alt='Reload Icon' />
+          </button>
+        </div>
       </div>
       {tickets.pending == true ? (
         <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
@@ -140,6 +151,8 @@ function Ticket({ data }: { data: Ticket }) {
           <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-green-300'>{data.status.toUpperCase()}</h4>
         ) : data.status.toLowerCase() === "closed" ? (
           <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-red-300'>{data.status.toUpperCase()}</h4>
+        ) : data.status.toLowerCase() === "in review" ? (
+          <h4 className='flex px-4 py-2 rounded-sm shadow-sm bg-orange-300'>{data.status.toUpperCase()}</h4>
         ) : null}
       </div>
 
