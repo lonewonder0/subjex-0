@@ -131,7 +131,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     }
 
     GetSession();
-  }, [forceReload]);
+  }, [forceReload, router, params]);
 
   // -----------------------------------------
   // Components for page
@@ -196,7 +196,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
         status: newStatus,
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}`, {
         method: "PATCH",
         credentials: "include",
         cache: "no-cache",
@@ -226,7 +226,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
           content: content,
         };
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}/comments`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}/comments`, {
           method: "POST",
           credentials: "include",
           cache: "no-cache",
@@ -300,6 +300,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
   // -----------------------------------------
   return (
     <div className='flex w-[80%] h-full flex-col gap-4 justify-center items-center'>
+      {isAdmin == true && <h4 className='flex text-sm italic text-green-800'>Logged in as Admin</h4>}
       <h1 className='flex text-4xl underline bold'>{ticket.state.title}</h1>
       <p className='flex text-lg'>{ticket.state.description}</p>
       <span className='flex h-[1px] w-full bg-gray-300' />
