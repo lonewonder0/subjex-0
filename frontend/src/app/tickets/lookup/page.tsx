@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Ticket } from "../page";
 import { useRouter } from "next/navigation";
 import DeleteIcon from "../../../../public/delete.svg";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export type Comment = {
   author_id: number;
@@ -14,7 +15,8 @@ export type Comment = {
   id: number;
 };
 
-export default function TicketPage({ params }: { params: Promise<{ id: string }> }) {
+function TicketPage() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [forceReload, setForceReload] = useState<boolean>(false);
   const [ticketId, setTicketId] = useState<number | null>(null);
@@ -39,6 +41,16 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
 
       setComments((prev) => {
         return { ...prev, pending: true };
+      });
+
+      // Get route id
+      const id = searchParams.get("id");
+      if (!id) {
+        router.replace("/");
+        return;
+      }
+      setTicketId(() => {
+        return Number(id);
       });
 
       // Check session / aka, if the user is logged in.
@@ -78,19 +90,17 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
         setUserId(user_id);
       }
 
-      // Get route id
-      const id = Number((await params).id);
-      console.log("Route id: ", id);
-      setTicketId(() => {
-        return id;
-      });
-
       // Fetch ticket.
       const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${id}`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
       });
+
+      if (!res2.ok) {
+        router.replace("/");
+        return;
+      }
 
       const ticket = (await res2.json()) as Ticket;
       setTicket(() => {
@@ -131,7 +141,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     }
 
     GetSession();
-  }, [forceReload, router, params]);
+  }, [forceReload, router, searchParams]);
 
   // -----------------------------------------
   // Components for page
@@ -139,6 +149,8 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
 
   function StatusChanger() {
     if (ticket.state == null) {
+      return;
+    } else if (ticket.state.status == null) {
       return;
     }
 
@@ -347,5 +359,13 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
         })}
       </div>
     </div>
+  );
+}
+
+export default function TicketPageMain() {
+  return (
+    <Suspense fallback={<p>Loading search params...</p>}>
+      <TicketPage />
+    </Suspense>
   );
 }

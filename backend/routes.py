@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from . import db
 from .models import User, Ticket, Comment, TicketAssignment
 from flask_login import login_required, current_user, login_user, logout_user
@@ -18,6 +18,25 @@ def admin_required(f):
             return jsonify({"error": "Admin access required"}), 403
         return f(*args, **kwargs)
     return decorated_function
+
+
+# --------------------------------
+# Main page content return from compiled /out
+# --------------------------------
+@app.route('/')
+def index():
+    # Serve the compiled index.html
+    return send_from_directory(app.static_folder, 'index.html')
+
+# Catch-all route to serve static files or fallback to index.html
+@app.route('/<path:path>')
+def static_proxy(path):
+    # First try to serve the requested file
+    try:
+        return send_from_directory(app.static_folder, path)
+    except Exception:
+        # If not found, load index.html (for handling client-side routing)
+        return send_from_directory(app.static_folder, 'index.html')
 
 
 # --------------------------------

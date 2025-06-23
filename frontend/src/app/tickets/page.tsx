@@ -159,7 +159,7 @@ export default function Tickets() {
 function Ticket({ data }: { data: Ticket }) {
   return (
     <Link
-      href={`tickets/${data.id}`}
+      href={`tickets/lookup?id=${data.id}`}
       className={`flex flex-col gap-2 h-fit w-full border-gray-400 border-[1px] rounded-md shadow-sm p-4 hover:bg-gray-100 group hover:cursor-pointer`}
     >
       <div className='flex flex-row pr-4 justify-between items-center'>
