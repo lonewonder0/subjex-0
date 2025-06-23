@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main className='flex flex-col w-[100vw] h-[100vh] items-center p-2'>
+        <main className='flex flex-col w-[100vw] h-[100vh] p-2'>
           <Link
             href={"/"}
             className='flex w-fit h-fit px-4 py-2 border-black border-[1px] shadow-sm rounded-sm hover:bg-gray-100 hover:cursor-pointer'

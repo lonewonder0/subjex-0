@@ -5,6 +5,7 @@ from flask_login import login_required, current_user, login_user, logout_user
 from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+import os
 
 # ----------------------------
 # Custom Decorator for Admin-Only Endpoints
@@ -17,6 +18,36 @@ def admin_required(f):
             return jsonify({"error": "Admin access required"}), 403
         return f(*args, **kwargs)
     return decorated_function
+
+
+# --------------------------------
+# Developer Only Routes, For administrative functions.
+# --------------------------------
+@login_required
+@app.route('/api/dev/elevate-user', methods=['POST'])
+def elevate_user():
+    # Only allow in development mode
+    if app.config['FLASK_ENV'] != 'development':
+        return jsonify({'error': 'Not allowed in production.'}), 403
+
+    data = request.get_json()
+    if not data or 'user_id' not in data or 'dev_password' not in data:
+        return jsonify({'error': 'user_id and password required'}), 400
+
+    if data['dev_password'] != os.getenv('ELEVATE_ADMIN_SECRET'):
+        return jsonify({'error': 'Invalid password'}), 401
+
+    user = User.query.get(data['user_id'])
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user.role = 'admin'
+    db.session.commit()
+
+    return jsonify({'message': f"User {user.username} elevated to admin."}), 200
+
+
+
 
 # --------------------------------
 # User Authentication Endpoints
@@ -475,6 +506,14 @@ def delete_ticket_assignment(ticket_id, assignment_id):
 # Users
 #-----------------
 
+
+# GET: All users
+@app.route('/api/users', methods=['GET'])
+@admin_required
+def get_all_users():
+    users = User.query.with_entities(User.id, User.username).all()
+    user_list = [{"user_id": user.id, "username": user.username} for user in users]
+    return jsonify(user_list), 200
 
 # GET: A user's username by their UID
 @app.route('/api/users/<int:user_id>', methods=['GET'])
