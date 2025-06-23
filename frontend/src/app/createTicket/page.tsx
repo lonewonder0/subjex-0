@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 export default function CreateTicket() {
   const router = useRouter();
-  const [forceReload, setForceReload] = useState<boolean>(false);
 
   const [isLoggedIn, setIsLoggedIn] = useState({ state: false, pending: true });
   const [message, setMessage] = useState("");
@@ -72,7 +71,7 @@ export default function CreateTicket() {
     }
 
     GetSession();
-  }, [forceReload, router]);
+  }, [router]);
 
   function FormAction(formData: FormData) {
     async function SendTicket() {
