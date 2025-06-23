@@ -299,7 +299,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
   // Main return
   // -----------------------------------------
   return (
-    <div className='flex w-[80%] h-full flex-col gap-4 justify-center items-center'>
+    <div className='flex w-full h-full flex-col gap-4 justify-center items-center px-24'>
       {isAdmin == true && <h4 className='flex text-sm italic text-green-800'>Logged in as Admin</h4>}
       <h1 className='flex text-4xl underline bold'>{ticket.state.title}</h1>
       <p className='flex text-lg'>{ticket.state.description}</p>

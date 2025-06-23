@@ -25,7 +25,7 @@ export default function Tickets() {
   const [username, setUsername] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [tickets, setTickets] = useState<{ state: Array<Ticket>; pending: boolean }>({ state: [], pending: true });
-  // const [hideClosed, setHideClosed] = useState<boolean>(true);
+  const [hideClosed, setHideClosed] = useState<boolean>(true);
 
   useEffect(() => {
     async function GetSession() {
@@ -109,8 +109,23 @@ export default function Tickets() {
         )}
 
         <div className='flex w-full h-fit flex-row gap-4 justify-end self-end'>
-          <button className='flex px-4 py-2 bg-purple-200 hover:bg-purple-400 hover:underline rounded-sm shadow-md'>
-            Toggle Hide Closed
+          <button
+            className='flex'
+            onClick={() => {
+              setHideClosed((prev) => {
+                return !prev;
+              });
+            }}
+          >
+            {hideClosed == true ? (
+              <div className='px-4 py-2 bg-purple-200 hover:bg-purple-400 hover:underline rounded-sm shadow-md'>
+                Hiding Closed Tickets
+              </div>
+            ) : (
+              <div className='px-4 py-2 bg-pink-200 hover:bg-pink-400 hover:underline rounded-sm shadow-md'>
+                Showing Closed Tickets
+              </div>
+            )}
           </button>
           <button
             className='flex text-1xl px-4 py-2 bg-blue-200 hover:bg-blue-400 hover:underline rounded-sm shadow-md'
@@ -130,9 +145,11 @@ export default function Tickets() {
         </p>
       ) : (
         <div className='flex w-[80%] h-fit flex-col gap-4'>
-          {tickets.state.map((ticket) => {
-            return <Ticket data={ticket} key={ticket.id} />;
-          })}
+          {tickets.state
+            .filter((ticket) => !(ticket.status.toLowerCase() === "closed" && hideClosed))
+            .map((ticket) => {
+              return <Ticket data={ticket} key={ticket.id} />;
+            })}
         </div>
       )}
     </div>
