@@ -55,7 +55,17 @@ export default function LoginPage() {
       });
 
       if (res.status == 201) {
-        setMessage("Successfully logged in.");
+        setMessage("Successfully created account in.");
+
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
         router.replace("/");
       } else if (res.status == 401) {
         setMessage("Unauthorised. Invalid Credentials.");

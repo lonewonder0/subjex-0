@@ -20,7 +20,7 @@ def load_user(user_id):
   return User.query.get(int(user_id))
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../frontend/out')
     app.config.from_object(Config)
 
     CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
