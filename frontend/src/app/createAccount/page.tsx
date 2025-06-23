@@ -54,7 +54,7 @@ export default function LoginPage() {
         body: JSON.stringify(body),
       });
 
-      if (res.status == 200) {
+      if (res.status == 201) {
         setMessage("Successfully logged in.");
         router.replace("/");
       } else if (res.status == 401) {
