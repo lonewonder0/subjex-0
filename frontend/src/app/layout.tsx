@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import HomeIcon from "../../public/home.svg";
+import TicketIcon from "../../public/reciept.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,12 +30,21 @@ export default function RootLayout({
     <html lang='en'>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <main className='flex flex-col w-[100vw] h-[100vh] p-2'>
-          <Link
-            href={"/"}
-            className='flex w-fit h-fit px-4 py-2 border-black border-[1px] shadow-sm rounded-sm hover:bg-gray-100 hover:cursor-pointer'
-          >
-            <Image src={HomeIcon} alt='Home Icon' />
-          </Link>
+          <nav className='flex flex-row gap-2'>
+            <Link
+              href={"/"}
+              className='flex w-fit h-fit px-4 py-2 border-black border-[1px] shadow-sm rounded-sm hover:bg-gray-100 hover:cursor-pointer'
+            >
+              <Image src={HomeIcon} alt='Home Icon' />
+            </Link>
+            <Link
+              href={"/tickets"}
+              className='flex w-fit h-fit px-4 py-2 border-black border-[1px] shadow-sm rounded-sm hover:bg-gray-100 hover:cursor-pointer'
+            >
+              <Image src={TicketIcon} alt='Ticket Icon'></Image>
+            </Link>
+          </nav>
+
           {children}
         </main>
       </body>
