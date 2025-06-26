@@ -27,11 +27,11 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
-    
+
     with app.app_context():
-        
         from . import routes
-        # Optionally, create tables if they don't exist
-        db.create_all()
+        if(app.config["FLASK_ENV"] != "production"):
+            # Optionally, create tables if they don't exist
+            db.create_all()
     
     return app

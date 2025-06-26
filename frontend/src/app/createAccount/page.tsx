@@ -9,7 +9,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     async function CheckIfAlreadyLoggedIn() {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
+      const res = await fetch(`${window.location.origin}/api/session`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -45,7 +45,7 @@ export default function LoginPage() {
         password: password,
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+      const res = await fetch(`${window.location.origin}/api/register`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -57,7 +57,7 @@ export default function LoginPage() {
       if (res.status == 201) {
         setMessage("Successfully created account in.");
 
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        await fetch(`${window.location.origin}/api/login`, {
           method: "POST",
           credentials: "include",
           headers: {

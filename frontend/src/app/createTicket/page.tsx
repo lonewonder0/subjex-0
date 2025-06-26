@@ -21,7 +21,7 @@ export default function CreateTicket() {
         return { ...prev, pending: true };
       });
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
+      const res = await fetch(`${window.location.origin}/api/session`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -48,7 +48,7 @@ export default function CreateTicket() {
         }
 
         // Fetch all users.
-        const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        const res2 = await fetch(`${window.location.origin}/api/users`, {
           method: "GET",
           cache: "no-cache",
           credentials: "include",
@@ -101,7 +101,7 @@ export default function CreateTicket() {
         assigned_user_ids: Array.from(new Set([...selectedUserIds, currentUserId])).filter(Boolean),
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets`, {
+      const res = await fetch(`${window.location.origin}/api/tickets`, {
         method: "POST",
         cache: "no-cache",
         credentials: "include",

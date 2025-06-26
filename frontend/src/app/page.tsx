@@ -12,7 +12,7 @@ export default function HomePage() {
         return { ...prev, pending: true };
       });
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
+      const res = await fetch(`${window.location.origin}/api/session`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -60,7 +60,7 @@ export default function HomePage() {
           <button
             className='flex px-4 py-2 rounded-sm shadow-md text-white bg-gray-600 hover:bg-gray-800 hover:underline'
             onClick={() => {
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
+              fetch(`${window.location.origin}/api/logout`, {
                 method: "POST",
                 cache: "no-cache",
                 credentials: "include",
