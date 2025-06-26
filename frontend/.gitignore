@@ -43,6 +43,3 @@ next-env.d.ts
 
 # Carry over
 venv/
-
-# Static export
-!out/
