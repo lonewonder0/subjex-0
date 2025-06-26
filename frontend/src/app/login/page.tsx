@@ -9,7 +9,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     async function CheckIfAlreadyLoggedIn() {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
+      const res = await fetch(`${window.location.origin}/api/session`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -39,7 +39,7 @@ export default function LoginPage() {
         password: password,
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+      const res = await fetch(`${window.location.origin}/api/login`, {
         method: "POST",
         credentials: "include",
         headers: {

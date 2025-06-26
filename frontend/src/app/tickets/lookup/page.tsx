@@ -54,7 +54,7 @@ function TicketPage() {
       });
 
       // Check session / aka, if the user is logged in.
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
+      const res = await fetch(`${window.location.origin}/api/session`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -91,7 +91,7 @@ function TicketPage() {
       }
 
       // Fetch ticket.
-      const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${id}`, {
+      const res2 = await fetch(`${window.location.origin}/api/tickets/${id}`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -108,7 +108,7 @@ function TicketPage() {
       });
 
       // Get Comments
-      const res3 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${id}/comments`, {
+      const res3 = await fetch(`${window.location.origin}/api/tickets/${id}/comments`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -126,7 +126,7 @@ function TicketPage() {
       // Get Comment Authors
       for (let index = 0; index < comments.length; index++) {
         const comment = comments[index];
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${comment.author_id}`, {
+        const res = await fetch(`${window.location.origin}/api/users/${comment.author_id}`, {
           method: "GET",
           cache: "force-cache",
           credentials: "include",
@@ -184,7 +184,7 @@ function TicketPage() {
           <button
             className='flex w-[5%] h-full flex-col items-center justify-center bg-red-300 rounded-md shadow-md hover:bg-red-500 hover:cursor-pointer'
             onClick={() => {
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments/${data.id}`, {
+              fetch(`${window.location.origin}/api/comments/${data.id}`, {
                 method: "DELETE",
                 cache: "default",
                 credentials: "include",
@@ -208,7 +208,7 @@ function TicketPage() {
         status: newStatus,
       };
 
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}`, {
+      await fetch(`${window.location.origin}/api/tickets/${ticketId}`, {
         method: "PATCH",
         credentials: "include",
         cache: "no-cache",
@@ -238,7 +238,7 @@ function TicketPage() {
           content: content,
         };
 
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}/comments`, {
+        await fetch(`${window.location.origin}/api/tickets/${ticketId}/comments`, {
           method: "POST",
           credentials: "include",
           cache: "no-cache",

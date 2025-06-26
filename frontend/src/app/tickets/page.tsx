@@ -38,7 +38,7 @@ export default function Tickets() {
         return { ...prev, pending: true };
       });
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
+      const res = await fetch(`${window.location.origin}/api/session`, {
         method: "GET",
         cache: "no-cache",
         credentials: "include",
@@ -62,7 +62,7 @@ export default function Tickets() {
         }
 
         // Fetch tickets.
-        const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickets`, {
+        const res2 = await fetch(`${window.location.origin}/api/tickets`, {
           method: "GET",
           cache: "no-cache",
           credentials: "include",
