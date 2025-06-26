@@ -28,7 +28,7 @@ Run in the /frontend directory ```npm install```
 ## Environment Secrets
 
 Utilise the .env.example as a template to create a .env file in the root directory.
-You should also create one in the /frontend directory using the .env.template file there.
+You should also create one in the /frontend directory using the .env.template file there. Avoid changing default values given to you, these aren't secret/unique.
 
 ## Build
 
