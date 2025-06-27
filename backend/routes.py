@@ -1,4 +1,4 @@
-from flask import request, jsonify, send_from_directory
+from flask import Blueprint, request, jsonify, send_from_directory
 from . import db
 from .models import User, Ticket, Comment, TicketAssignment
 from flask_login import login_required, current_user, login_user, logout_user
@@ -6,6 +6,8 @@ from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
+
+bp = Blueprint('main', __name__, static_folder=None)
 
 # ----------------------------
 # Custom Decorator for Admin-Only Endpoints
@@ -23,13 +25,13 @@ def admin_required(f):
 # --------------------------------
 # Main page content return from compiled /out
 # --------------------------------
-@app.route('/')
+@bp.route('/')
 def index():
     # Serve the compiled index.html
     return send_from_directory(app.static_folder, 'index.html')
 
 # Catch-all route to serve static files or fallback to index.html
-@app.route('/<path:path>')
+@bp.route('/<path:path>')
 def static_proxy(path):
     # First try to serve the requested file
     try:
@@ -43,7 +45,7 @@ def static_proxy(path):
 # Developer Only Routes, For administrative functions.
 # --------------------------------
 @login_required
-@app.route('/api/dev/elevate-user', methods=['POST'])
+@bp.route('/api/dev/elevate-user', methods=['POST'])
 def elevate_user():
     # Only allow in development mode
     if app.config['FLASK_ENV'] != 'development':
@@ -72,7 +74,7 @@ def elevate_user():
 # User Authentication Endpoints
 # --------------------------------
 
-@app.route('/api/register', methods=['POST'])
+@bp.route('/api/register', methods=['POST'])
 def register_user():
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
@@ -91,7 +93,7 @@ def register_user():
     db.session.commit()
     return jsonify({"message": "User registered successfully!"}), 201
 
-@app.route('/api/login', methods=['POST'])
+@bp.route('/api/login', methods=['POST'])
 def login_user_endpoint():
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
@@ -100,18 +102,17 @@ def login_user_endpoint():
     user = User.query.filter_by(username=data['username']).first()
     if user and check_password_hash(user.password, data['password']):
         login_user(user)
-        
         return jsonify({"message": "Logged in successfully!"}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
-@app.route('/api/logout', methods=['POST'])
+@bp.route('/api/logout', methods=['POST'])
 @login_required
 def logout_user_endpoint():
     logout_user()
     return jsonify({"message": "Logged out successfully!"}), 200
 
-@app.route('/api/session', methods=['GET'])
+@bp.route('/api/session', methods=['GET'])
 @login_required
 def get_session_info():
     return jsonify({
@@ -126,7 +127,7 @@ def get_session_info():
 
 # GET all tickets.
 # Admins see all; non-admins see only tickets where they have an assignment.
-@app.route('/api/tickets', methods=['GET'])
+@bp.route('/api/tickets', methods=['GET'])
 @login_required
 def get_tickets():
     if current_user.role == "admin":
@@ -154,7 +155,7 @@ def get_tickets():
 
 # POST: Create a new ticket.
 # Only admins can create tickets. When creating, they must include an assignment to at least one user.
-@app.route('/api/tickets', methods=['POST'])
+@bp.route('/api/tickets', methods=['POST'])
 @admin_required
 def create_ticket():
     data = request.get_json()
@@ -200,7 +201,7 @@ def create_ticket():
 
 # GET: A single ticket by its id.
 # Non-admins must be assigned to the ticket to access it.
-@app.route('/api/tickets/<int:ticket_id>', methods=['GET'])
+@bp.route('/api/tickets/<int:ticket_id>', methods=['GET'])
 @login_required
 def get_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -227,7 +228,7 @@ def get_ticket(ticket_id):
 
 # PATCH: Update a ticket.
 # Only admins can update ticket details, and only for tickets they own.
-@app.route('/api/tickets/<int:ticket_id>', methods=['PATCH'])
+@bp.route('/api/tickets/<int:ticket_id>', methods=['PATCH'])
 @admin_required
 def update_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -252,7 +253,7 @@ def update_ticket(ticket_id):
 
 # POST: Update the users assigned to a specific ticket
 # Only admins can update ticket details, and only for tickets they own.
-@app.route('/api/tickets/<int:ticket_id>/assignments', methods=['POST'])
+@bp.route('/api/tickets/<int:ticket_id>/assignments', methods=['POST'])
 @admin_required
 def assign_user_to_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -292,7 +293,7 @@ def assign_user_to_ticket(ticket_id):
 
 # DELETE: Removes a user assigned to a ticket
 # Only admins can change ticket details, and only tickets they own.
-@app.route('/api/tickets/<int:ticket_id>/assignments/<int:user_id>', methods=['DELETE'])
+@bp.route('/api/tickets/<int:ticket_id>/assignments/<int:user_id>', methods=['DELETE'])
 @admin_required
 def remove_user_from_ticket(ticket_id, user_id):
     ticket = Ticket.query.get(ticket_id)
@@ -315,7 +316,7 @@ def remove_user_from_ticket(ticket_id, user_id):
 
 # DELETE: Delete a ticket.
 # Only admins can delete tickets, and only tickets they own.
-@app.route('/api/tickets/<int:ticket_id>', methods=['DELETE'])
+@bp.route('/api/tickets/<int:ticket_id>', methods=['DELETE'])
 @admin_required
 def delete_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -335,7 +336,7 @@ def delete_ticket(ticket_id):
 # ----------------------
 
 # GET all comments for a specific ticket.
-@app.route('/api/tickets/<int:ticket_id>/comments', methods=['GET'])
+@bp.route('/api/tickets/<int:ticket_id>/comments', methods=['GET'])
 @login_required
 def get_ticket_comments(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -359,7 +360,7 @@ def get_ticket_comments(ticket_id):
     return jsonify(results), 200
 
 # POST a comment on a ticket.
-@app.route('/api/tickets/<int:ticket_id>/comments', methods=['POST'])
+@bp.route('/api/tickets/<int:ticket_id>/comments', methods=['POST'])
 @login_required
 def add_comment(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -394,7 +395,7 @@ def add_comment(ticket_id):
 # DELETE a comment.
 # Allowed if the current user is the comment owner OR
 # if the current user is an admin and they are the creator of the associated ticket.
-@app.route('/api/comments/<int:comment_id>', methods=['DELETE'])
+@bp.route('/api/comments/<int:comment_id>', methods=['DELETE'])
 @login_required
 def delete_comment(comment_id):
     comment = Comment.query.get(comment_id)
@@ -422,7 +423,7 @@ def delete_comment(comment_id):
 # GET assignments for a ticket.
 # - If the current user is an admin, return all assignments for the ticket.
 # - If a standard user, return only their own assignment (if any).
-@app.route('/api/tickets/<int:ticket_id>/assignments', methods=['GET'])
+@bp.route('/api/tickets/<int:ticket_id>/assignments', methods=['GET'])
 @login_required
 def get_ticket_assignments(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -437,8 +438,7 @@ def get_ticket_assignments(ticket_id):
             'assignments': [{
                 'id': assignment.id,
                 'ticket_id': assignment.ticket_id,
-                'user_id': assignment.user_id,
-                'assignment_note': assignment.assignment_note
+                'user_id': assignment.user_id
             }]
         }), 200
 
@@ -450,13 +450,12 @@ def get_ticket_assignments(ticket_id):
             'id': assign.id,
             'ticket_id': assign.ticket_id,
             'user_id': assign.user_id,
-            'assignment_note': assign.assignment_note
         })
     return jsonify({'assignments': results}), 200
 
 # POST: Create a new assignment for a ticket.
 # Only admins can assign users to tickets.
-@app.route('/api/tickets/<int:ticket_id>/assignments', methods=['POST'])
+@bp.route('/api/tickets/<int:ticket_id>/assignments', methods=['POST'])
 @admin_required
 def create_ticket_assignment(ticket_id):
     ticket = Ticket.query.get(ticket_id)
@@ -495,7 +494,7 @@ def create_ticket_assignment(ticket_id):
 
 # PATCH: Update an assignment (for example, change the assignment_note).
 # Only admins may update assignments.
-@app.route('/api/tickets/<int:ticket_id>/assignments/<int:assignment_id>', methods=['PATCH'])
+@bp.route('/api/tickets/<int:ticket_id>/assignments/<int:assignment_id>', methods=['PATCH'])
 @admin_required
 def update_ticket_assignment(ticket_id, assignment_id):
     assignment = TicketAssignment.query.filter_by(id=assignment_id, ticket_id=ticket_id).first()
@@ -510,7 +509,7 @@ def update_ticket_assignment(ticket_id, assignment_id):
 
 # DELETE: Remove an assignment from a ticket.
 # Only admins can remove an assignment.
-@app.route('/api/tickets/<int:ticket_id>/assignments/<int:assignment_id>', methods=['DELETE'])
+@bp.route('/api/tickets/<int:ticket_id>/assignments/<int:assignment_id>', methods=['DELETE'])
 @admin_required
 def delete_ticket_assignment(ticket_id, assignment_id):
     assignment = TicketAssignment.query.filter_by(id=assignment_id, ticket_id=ticket_id).first()
@@ -527,7 +526,7 @@ def delete_ticket_assignment(ticket_id, assignment_id):
 
 
 # GET: All users
-@app.route('/api/users', methods=['GET'])
+@bp.route('/api/users', methods=['GET'])
 @admin_required
 def get_all_users():
     users = User.query.with_entities(User.id, User.username).all()
@@ -535,7 +534,7 @@ def get_all_users():
     return jsonify(user_list), 200
 
 # GET: A user's username by their UID
-@app.route('/api/users/<int:user_id>', methods=['GET'])
+@bp.route('/api/users/<int:user_id>', methods=['GET'])
 @login_required
 def get_username(user_id):
     user = User.query.get(user_id)
