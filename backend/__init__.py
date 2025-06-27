@@ -16,22 +16,24 @@ def unauthorized():
 
 @login_manager.user_loader
 def load_user(user_id):
-  from .models import User
-  return User.query.get(int(user_id))
+    from .models import User
+    return User.query.get(int(user_id))
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__, static_folder='../frontend/out')
     app.config.from_object(Config)
+    if test_config:
+        app.config.update(test_config)
 
     CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
 
     db.init_app(app)
     login_manager.init_app(app)
 
+    from .routes import bp
+    app.register_blueprint(bp)
+
     with app.app_context():
-        from . import routes
-        if(app.config["FLASK_ENV"] != "production"):
-            # Optionally, create tables if they don't exist
-            db.create_all()
+        db.create_all()
     
     return app
