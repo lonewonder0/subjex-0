@@ -1,0 +1,7 @@
+# Production compose overrides
+# i.e. docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  app:
+    image: ghcr.io/${GITHUB_REPOSITORY:-your-org/subjex-0}:latest
+    build: !reset null
