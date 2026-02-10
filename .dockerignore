@@ -1,0 +1,8 @@
+# Docker
+instance/
+__pycache__/
+*.pyc
+.env
+frontend/node_modules/
+frontend/.next/
+frontend/out/
