@@ -50,3 +50,59 @@ Site accessible on `http://localhost:5000/`
 
 Run in the root directory `gunicorn app:app`. It's worth noting you should modify the .env variable "FLASK_ENV" to be "production" instead of "development".
 Site accessible on `http://localhost:8000/`
+
+---
+
+## Docker & CI/CD Deployment
+
+The project includes a full Docker Compose setup with GitHub Actions to deploy to a VPS.
+
+### Local Docker Setup
+
+```bash
+# Copy the env template and fill in real values
+cp .env.example .env
+
+# Build and start all services
+docker compose up --build -d
+
+# View logs
+docker compose logs -f
+```
+
+The app will be available at `http://localhost` (port 80).
+
+### Key Files
+
+`backend/Dockerfile` | Multi-stage build — compiles the Next.js frontend, then bundles it into a Python image with gunicorn |
+`docker-compose.yml` | Base compose: PostgreSQL + Flask app + Nginx |
+`docker-compose.prod.yml` | Prod |
+`nginx/default.conf` | Nginx config proxying all traffic to Flask |
+`.github/workflows/ci-cd.yml` | GitHub Actions pipeline |
+`scripts/setup-vps.sh` | One-time VPS bootstrap script |
+
+### CI/CD Pipeline (GitHub Actions)
+
+The pipeline triggers on every push to `main`:
+
+1. **Test** — runs `pytest` against a Postgres service container + lints and builds the frontend
+2. **Build & Push** — builds the Docker image and pushes it to GitHub Container Registry (`ghcr.io`)
+3. **Deploy** — SSHs into the VPS, pulls the new image, and restarts with `docker compose up -d`
+
+#### Required GitHub Secrets
+
+`VPS_HOST` | Your VPS IP address or hostname |
+`VPS_USER` | SSH user on the VPS (e.g. `deploy`) |
+`VPS_SSH_KEY` | Private SSH key for that user |
+
+### First-Time VPS Setup
+
+```bash
+# Run the bootstrap script
+ssh root@your-vps < scripts/setup-vps.sh
+
+# Then edit the .env file
+ssh root@your-vps "nano /opt/subjex/.env"
+```
+
+The script installs Docker, creates `/opt/subjex`, and seeds a `.env` template. After that, every push to `main` will automatically test, build, and deploy.
