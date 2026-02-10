@@ -58,7 +58,7 @@ def elevate_user():
     if data['dev_password'] != os.getenv('ELEVATE_ADMIN_SECRET'):
         return jsonify({'error': 'Invalid password'}), 401
 
-    user = User.query.get(data['user_id'])
+    user = db.session.get(User, data['user_id'])
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
@@ -165,7 +165,7 @@ def create_ticket():
     # Validate that each assigned user exists.
     assigned_users = []
     for user_id in data.get("assigned_user_ids"):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if not user:
             return jsonify({"error": f"User with id {user_id} not found"}), 404
         assigned_users.append(user)
@@ -204,7 +204,7 @@ def create_ticket():
 @bp.route('/api/tickets/<int:ticket_id>', methods=['GET'])
 @login_required
 def get_ticket(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
     
@@ -231,7 +231,7 @@ def get_ticket(ticket_id):
 @bp.route('/api/tickets/<int:ticket_id>', methods=['PATCH'])
 @admin_required
 def update_ticket(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
 
@@ -256,7 +256,7 @@ def update_ticket(ticket_id):
 @bp.route('/api/tickets/<int:ticket_id>/assignments', methods=['POST'])
 @admin_required
 def assign_user_to_ticket(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
 
@@ -268,7 +268,7 @@ def assign_user_to_ticket(ticket_id):
     if not data or 'user_id' not in data:
         return jsonify({"error": "User ID is required"}), 400
 
-    user = User.query.get(data['user_id'])
+    user = db.session.get(User, data['user_id'])
     if not user:
         return jsonify({"error": "User not found"}), 404
 
@@ -296,7 +296,7 @@ def assign_user_to_ticket(ticket_id):
 @bp.route('/api/tickets/<int:ticket_id>/assignments/<int:user_id>', methods=['DELETE'])
 @admin_required
 def remove_user_from_ticket(ticket_id, user_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
     
@@ -319,7 +319,7 @@ def remove_user_from_ticket(ticket_id, user_id):
 @bp.route('/api/tickets/<int:ticket_id>', methods=['DELETE'])
 @admin_required
 def delete_ticket(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
     
@@ -339,7 +339,7 @@ def delete_ticket(ticket_id):
 @bp.route('/api/tickets/<int:ticket_id>/comments', methods=['GET'])
 @login_required
 def get_ticket_comments(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
 
@@ -363,7 +363,7 @@ def get_ticket_comments(ticket_id):
 @bp.route('/api/tickets/<int:ticket_id>/comments', methods=['POST'])
 @login_required
 def add_comment(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
 
@@ -398,7 +398,7 @@ def add_comment(ticket_id):
 @bp.route('/api/comments/<int:comment_id>', methods=['DELETE'])
 @login_required
 def delete_comment(comment_id):
-    comment = Comment.query.get(comment_id)
+    comment = db.session.get(Comment, comment_id)
     if not comment:
         return jsonify({"error": "Comment not found"}), 404
 
@@ -426,7 +426,7 @@ def delete_comment(comment_id):
 @bp.route('/api/tickets/<int:ticket_id>/assignments', methods=['GET'])
 @login_required
 def get_ticket_assignments(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
 
@@ -537,7 +537,7 @@ def get_all_users():
 @bp.route('/api/users/<int:user_id>', methods=['GET'])
 @login_required
 def get_username(user_id):
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
