@@ -87,15 +87,11 @@ export default function Tickets() {
 
   if (isLoggedIn.pending == true) {
     return (
-      <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-        Checking Credentials...
-      </p>
+      <div></div>
     );
   } else if (isLoggedIn.pending == false && isLoggedIn.state == false) {
     return (
-      <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-        Not Logged In... Not authorised, being redirected.
-      </p>
+      <div></div>
     );
   }
 
@@ -140,9 +136,7 @@ export default function Tickets() {
         </div>
       </div>
       {tickets.pending == true ? (
-        <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-          Fetching Tickets...
-        </p>
+        <div></div>
       ) : (
         <div className='flex w-[80%] h-fit flex-col gap-4'>
           {tickets.state

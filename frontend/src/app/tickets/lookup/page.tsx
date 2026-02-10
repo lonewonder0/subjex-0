@@ -279,31 +279,23 @@ function TicketPage() {
   // -----------------------------------------
   if (isLoggedIn.pending == true) {
     return (
-      <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-        Checking Credentials...
-      </p>
+      <div></div>
     );
   } else if (isLoggedIn.pending == false && isLoggedIn.state == false) {
     return (
-      <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-        Not Logged In... Not authorised, being redirected.
-      </p>
+      <div></div>
     );
   }
 
   if (ticket.pending == true || ticket.state == null) {
     return (
-      <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-        Loading ticket data...
-      </p>
+      <div></div>
     );
   }
 
   if (comments.pending == true) {
     return (
-      <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-        Loading comments data...
-      </p>
+      <div></div>
     );
   }
 
@@ -364,7 +356,7 @@ function TicketPage() {
 
 export default function TicketPageMain() {
   return (
-    <Suspense fallback={<p>Loading search params...</p>}>
+    <Suspense fallback={<div></div>}>
       <TicketPage />
     </Suspense>
   );

@@ -104,9 +104,7 @@ export default function HomePage() {
           {isLoggedIn.state == true ? <LoggedIn isAdmin={isAdmin} /> : <NotLoggedIn />}
         </div>
       ) : (
-        <p className='flex w-full h-full items-center justify-center text-center italic text-2xl'>
-          Checking Credentials...
-        </p>
+          <div></div>
       )}
     </>
   );
