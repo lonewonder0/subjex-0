@@ -10,10 +10,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:-subjex}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-subjex}"]
+      test: ["CMD-SHELL", "psql -U ${POSTGRES_USER:-subjex} -d ${POSTGRES_DB:-subjex} -c '\\q'"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
+      start_period: 10s
 
   # ---------- Flask App ----------
   app:
