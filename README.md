@@ -1,8 +1,8 @@
 # Subjex
 
-QA Y2 Software Agile Project
+QA Y3 Software 
 Authored: Bradley W
-Date: 27 . 06 . 2025
+Date: 13 . 02 . 2026
 
 ## Perquisites
 
