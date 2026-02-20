@@ -42,18 +42,13 @@ def static_proxy(path):
 
 
 # --------------------------------
-# Developer Only Routes, For administrative functions.
+# Admin Elevation Route — protected by ELEVATE_ADMIN_SECRET
 # --------------------------------
-@login_required
 @bp.route('/api/dev/elevate-user', methods=['POST'])
 def elevate_user():
-    # Only allow in development mode
-    if app.config['FLASK_ENV'] != 'development':
-        return jsonify({'error': 'Not allowed in production.'}), 403
-
     data = request.get_json()
     if not data or 'user_id' not in data or 'dev_password' not in data:
-        return jsonify({'error': 'user_id and password required'}), 400
+        return jsonify({'error': 'user_id and dev_password required'}), 400
 
     if data['dev_password'] != os.getenv('ELEVATE_ADMIN_SECRET'):
         return jsonify({'error': 'Invalid password'}), 401
@@ -542,3 +537,21 @@ def get_username(user_id):
         return jsonify({'error': 'User not found'}), 404
 
     return jsonify({'user_id': user.id, 'username': user.username}), 200
+
+# DELETE: Remove a user by ID — requires DELETE_USER_SECRET
+@bp.route('/api/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    data = request.get_json()
+    if not data or 'delete_secret' not in data:
+        return jsonify({'error': 'delete_secret is required'}), 400
+
+    if data['delete_secret'] != os.getenv('DELETE_USER_SECRET'):
+        return jsonify({'error': 'Invalid secret'}), 401
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': f'User {user.username} deleted successfully'}), 200

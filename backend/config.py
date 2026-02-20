@@ -9,3 +9,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FLASK_ENV = os.environ.get("FLASK_ENV")
     ELEVATE_ADMIN_SECRET = os.environ.get("ELEVATE_ADMIN_SECRET")
+    DELETE_USER_SECRET = os.environ.get("DELETE_USER_SECRET")
